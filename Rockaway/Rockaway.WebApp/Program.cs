@@ -41,8 +41,11 @@ using var db = scope.ServiceProvider.GetService<RockawayDbContext>()!;
 
 if (app.Environment.UseSqlite()) {
 	db.Database.EnsureCreated();
-} else {
-	//TODO: migrate database!
+} else if (Boolean.TryParse(app.Configuration["apply-migrations"], out var applyMigrations) && applyMigrations) {
+	logger.LogInformation("apply-migrations=true was specified. Applying EF migrations and then exiting.");
+	db.Database.Migrate();
+	logger.LogInformation("EF database migrations applied successfully.");
+	Environment.Exit(0);
 }
 
 app.UseHttpsRedirection();
