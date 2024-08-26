@@ -57,3 +57,27 @@ jobs:
           slot-name: 'staging'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_896ABF9947ED44EFAA62A6C28005732F }}
+      - name: Check Staging Status
+        id: check_staging
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://rockaway-cphdevfest2024-staging.azurewebsites.net/status)
+          if [ "$response" != "200" ]; then
+            echo "Staging environment is not OK. Status code: $response"
+            exit 1
+          fi
+          echo "Staging environment is OK."
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Swap Slots
+        if: steps.check_staging.outcome == 'success'
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp deployment slot swap \
+              --resource-group rockaway-cphdevfest2024-resource-group \
+              --name rockaway-cphdevfest-2024 \
+              --slot staging \
+              --target-slot production
+
