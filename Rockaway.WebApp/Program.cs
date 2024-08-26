@@ -4,14 +4,11 @@ using Rockaway.WebApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddRazorPages(options => options.Conventions.AuthorizeAreaFolder("admin", "/"));
 builder.Services.AddControllersWithViews(options => {
 	options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 builder.Services.AddSingleton<IClock>(SystemClock.Instance);
-
-builder.Services.AddRazorPages();
 
 var logger = CreateAdHocLogger<Program>();
 logger.LogInformation("Rockaway running in {environment} environment", builder.Environment.EnvironmentName);
