@@ -17,6 +17,8 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
 		<PackageReference Include="NodaTime" Version="3.1.11" />
-  </ItemGroup>
-
+	</ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="Rockaway.WebApp.Tests" />
+	</ItemGroup>
 </Project>
