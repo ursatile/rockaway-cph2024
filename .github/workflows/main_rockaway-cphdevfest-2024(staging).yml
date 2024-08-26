@@ -36,6 +36,8 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
+      - name: Migrate SQL database
+        run: dotnet Rockaway.WebApp.dll -- --e ConnectionStrings:AZURE_SQL_CONNECTIONSTRING="${{ secrets.AZURE_SQL_CONNECTIONSTRING }}" apply-migrations=true
   deploy:
     runs-on: ubuntu-latest
     needs: build
