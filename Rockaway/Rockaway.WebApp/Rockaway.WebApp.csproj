@@ -32,4 +32,8 @@
 	<ItemGroup>
 	  <None Include="wwwroot\scss\frontend.scss" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="wwwroot\lib\fontawesome\scss\" />
+	  <Folder Include="wwwroot\webfonts\" />
+	</ItemGroup>
 </Project>
