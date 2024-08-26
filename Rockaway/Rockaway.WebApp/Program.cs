@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Rockaway.WebApp.Data;
+using Rockaway.WebApp.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,24 +13,36 @@ builder.Services.AddSingleton<IClock>(SystemClock.Instance);
 
 var logger = CreateAdHocLogger<Program>();
 logger.LogInformation("Rockaway running in {environment} environment", builder.Environment.EnvironmentName);
-logger.LogInformation("Using Sqlite database");
-var sqliteConnection = new SqliteConnection("Data Source=:memory:");
-sqliteConnection.Open();
-builder.Services.AddDbContext<RockawayDbContext>(options => options.UseSqlite(sqliteConnection));
+
+if (builder.Environment.UseSqlite()) {
+	logger.LogInformation("Using Sqlite database");
+	var sqliteConnection = new SqliteConnection("Data Source=:memory:");
+	sqliteConnection.Open();
+	builder.Services.AddDbContext<RockawayDbContext>(options => options.UseSqlite(sqliteConnection));
+} else {
+	logger.LogInformation("Using SQL Server database");
+	var connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+	builder.Services.AddDbContext<RockawayDbContext>(options => options.UseSqlServer(connectionString));
+}
+
 builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<RockawayDbContext>();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment()) {
+if (app.Environment.IsProduction()) {
 	app.UseExceptionHandler("/Error");
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
 
-using (var scope = app.Services.CreateScope()) {
-	using var db = scope.ServiceProvider.GetService<RockawayDbContext>()!;
+using var scope = app.Services.CreateScope();
+using var db = scope.ServiceProvider.GetService<RockawayDbContext>()!;
+
+if (app.Environment.UseSqlite()) {
 	db.Database.EnsureCreated();
+} else {
+	//TODO: migrate database!
 }
 
 app.UseHttpsRedirection();
