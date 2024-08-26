@@ -4,6 +4,7 @@ using Shouldly;
 
 namespace Rockaway.WebApp.Tests {
 	public class PageTests {
+
 		[Fact]
 		public async Task Index_Page_Returns_Success() {
 			await using var factory = new WebApplicationFactory<Program>();

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Rockaway.WebApp.Data;
 using Rockaway.WebApp.Hosting;
+using Rockaway.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddControllersWithViews(options => {
 	options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 builder.Services.AddSingleton<IClock>(SystemClock.Instance);
+
+builder.Services.AddSingleton<IStatusReporter>(new StatusReporter());
+
 
 var logger = CreateAdHocLogger<Program>();
 logger.LogInformation("Rockaway running in {environment} environment", builder.Environment.EnvironmentName);
@@ -56,6 +60,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapGet("/status", (IStatusReporter reporter) => reporter.GetStatus());
 
 app.MapAreaControllerRoute(
 	name: "admin",
