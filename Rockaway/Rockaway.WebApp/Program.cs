@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using Rockaway.WebApp.Data;
 using Rockaway.WebApp.Hosting;
 using Rockaway.WebApp.Services;
+using Rockaway.WebApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,10 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 #if DEBUG && !NCRUNCH
 builder.Services.AddSassCompiler();
 #endif
+
+builder.Services.AddRazorComponents()
+	.AddInteractiveServerComponents();
+
 
 var app = builder.Build();
 
@@ -75,5 +80,9 @@ app.MapAreaControllerRoute(
 ).RequireAuthorization();
 app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 app.MapControllers();
+
+app.MapRazorComponents<App>()
+	.AddInteractiveServerRenderMode();
+
 app.Run();
 ILogger<T> CreateAdHocLogger<T>() => LoggerFactory.Create(lb => lb.AddConsole()).CreateLogger<T>();

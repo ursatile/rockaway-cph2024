@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Components\TicketPicker.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
 		<PackageReference Include="AspNetCore.SassCompiler" Version="1.77.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.8" />
@@ -28,6 +32,9 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <UpToDateCheckInput Remove="wwwroot\scss\frontend.scss" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Components\TicketPicker.razor.css" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Include="wwwroot\scss\frontend.scss" />

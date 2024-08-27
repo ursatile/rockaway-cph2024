@@ -35,6 +35,9 @@ public static partial class SampleData {
 		public static Venue NewCrossInn = new(NextId, "New Cross Inn", "new-cross-inn-london", "323 New Cross Road", "London", "en-GB", "SE14 6AS",
 			"+44 20 8469 4382", "https://www.newcrossinn.com/");
 
+		public static Venue AmagerBio = new(NextId, "Amager Bio", "amager-bio-cph", "Øresundsvej 6", "Copenhagen", "da-DK", "2300",
+			"+45 32 86 08 80", "https://amagerbio.dk/");
+
 		public static Venue[] AllVenues => [
 			Electric,
 			Bataclan,
@@ -44,7 +47,8 @@ public static partial class SampleData {
 			Stengade,
 			Barracuda,
 			PubAnchor,
-			NewCrossInn
+			NewCrossInn,
+			AmagerBio
 		];
 	}
 }
