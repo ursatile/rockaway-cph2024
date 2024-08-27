@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
+using Rockaway.RazorComponents;
 using Rockaway.WebApp.Data;
 using Rockaway.WebApp.Hosting;
 using Rockaway.WebApp.Services;
-using Rockaway.WebApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,8 +38,8 @@ builder.Services.AddSassCompiler();
 #endif
 
 builder.Services.AddRazorComponents()
-	.AddInteractiveServerComponents();
-
+	.AddInteractiveServerComponents()
+	.AddInteractiveWebAssemblyComponents();
 
 var app = builder.Build();
 
@@ -82,7 +82,8 @@ app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 app.MapControllers();
 
 app.MapRazorComponents<App>()
-	.AddInteractiveServerRenderMode();
+	.AddInteractiveServerRenderMode()
+	.AddInteractiveWebAssemblyRenderMode();
 
 app.Run();
 ILogger<T> CreateAdHocLogger<T>() => LoggerFactory.Create(lb => lb.AddConsole()).CreateLogger<T>();
