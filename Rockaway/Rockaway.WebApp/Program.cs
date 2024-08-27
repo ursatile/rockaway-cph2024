@@ -18,6 +18,7 @@ builder.Services.AddSingleton<IClock>(SystemClock.Instance);
 
 builder.Services.AddSingleton<IStatusReporter>(new StatusReporter());
 
+builder.AddServiceDefaults();
 
 var logger = CreateAdHocLogger<Program>();
 logger.LogInformation("Rockaway running in {environment} environment", builder.Environment.EnvironmentName);
