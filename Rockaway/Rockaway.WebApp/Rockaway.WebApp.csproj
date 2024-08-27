@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Templates\Mail\OrderConfirmation.mjml" />
+    <None Remove="Templates\Mail\OrderConfirmation.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
 		<PackageReference Include="AspNetCore.SassCompiler" Version="1.77.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
@@ -31,6 +36,14 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <UpToDateCheckInput Remove="wwwroot\scss\frontend.scss" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Templates\Mail\OrderConfirmation.mjml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Templates\Mail\OrderConfirmation.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
 	  <None Include="wwwroot\scss\frontend.scss" />
