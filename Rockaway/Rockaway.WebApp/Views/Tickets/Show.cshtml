@@ -2,62 +2,33 @@
 @model Rockaway.WebApp.Models.ShowViewData
 @section Head {
 	<link rel="stylesheet" href="~/Rockaway.RazorComponents.styles.css" asp-append-version="true"/>
+	<style>
+		div.wasm-wrapper > *:last-child:not(:first-child) {
+			display: none;
+		}
+		div.loader {
+			text-align: center;
+			padding: 72px;
+			font-size: 200%;
+		}
+	</style>
 }
 <h1>@Model.HeadlineArtistName</h1>
 <p>@Model.VenueName, @Model.VenueAddress</p>
 <p>@Model.ShowDate</p>
-<h1>Static</h1>
-@(await Html.RenderComponentAsync<TicketPicker>(RenderMode.Static, new {
-	TicketTypes = Model.TicketTypes.Select(tt => new TicketPickerItem {
-		Id = tt.Id, Name = tt.Name, Price = tt.Price
-	}).ToList(),
-	Model.CultureName
-}))
-<hr />
-<h1>Server</h1>
-@(await Html.RenderComponentAsync<TicketPicker>(RenderMode.Server, new {
-	TicketTypes = Model.TicketTypes.Select(tt => new TicketPickerItem {
-		Id = tt.Id, Name = tt.Name, Price = tt.Price
-	}).ToList(),
-	Model.CultureName
-}))
-<h1>ServerPrerendered</h1>
-@(await Html.RenderComponentAsync<TicketPicker>(RenderMode.ServerPrerendered, new {
-	TicketTypes = Model.TicketTypes.Select(tt => new TicketPickerItem {
-		Id = tt.Id, Name = tt.Name, Price = tt.Price
-	}).ToList(),
-	Model.CultureName
-}))
-<h1>WebAssembly</h1>
-@(await Html.RenderComponentAsync<TicketPicker>(RenderMode.WebAssembly, new {
-	TicketTypes = Model.TicketTypes.Select(tt => new TicketPickerItem {
-		Id = tt.Id, Name = tt.Name, Price = tt.Price
-	}).ToList(),
-	Model.CultureName
-}))
-
-<h1>WebAssemblyPrerendered</h1>
-@(await Html.RenderComponentAsync<TicketPicker>(RenderMode.WebAssemblyPrerendered, new
-{
-	TicketTypes = Model.TicketTypes.Select(tt => new TicketPickerItem
-	{
-		Id = tt.Id,
-		Name = tt.Name,
-		Price = tt.Price
-	}).ToList(),
-	Model.CultureName
-}))
-<hr />
-
 
 <form method="post">
-
-	@(await Html.RenderComponentAsync<TicketPicker>(RenderMode.WebAssemblyPrerendered, new {
-		TicketTypes = Model.TicketTypes.Select(tt => new TicketPickerItem {
-			Id = tt.Id, Name = tt.Name, Price = tt.Price
-		}).ToList(),
-		Model.CultureName
-	}))
+	<div class="wasm-wrapper">
+		@(await Html.RenderComponentAsync<TicketPicker>(RenderMode.WebAssembly, new {
+			TicketTypes = Model.TicketTypes.Select(tt => new TicketPickerItem {
+				Id = tt.Id, Name = tt.Name, Price = tt.Price
+			}).ToList(),
+			Model.CultureName
+		}))
+		<div class="loader">
+			<i class="fa-solid fa-spinner  fa-spin"></i>
+		</div>
+	</div>
 
 	<section class="row">
 		<div class="col-12 col-md-8 offset-md-2 text-end">
