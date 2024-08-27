@@ -9,6 +9,7 @@
 			@venue.Name
 		</div>
 		<div class="col-4">
+			<country-flag iso-code="@venue.CountryCode" />
 			@venue.Address, @venue.City @venue.PostalCode<br />
 			@Country.FromCode(venue.CountryCode)?.Name
 		</div>
