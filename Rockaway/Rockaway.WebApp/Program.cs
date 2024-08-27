@@ -61,6 +61,9 @@ logger.LogInformation($"Using {smtpSettings.Host} as SMTP relay server");
 builder.Services.AddSingleton(smtpSettings);
 builder.Services.AddSingleton<ISmtpRelay, SmtpRelay>();
 
+builder.Services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue());
+builder.Services.AddHostedService<QueuedHostedService>();
+
 if (! builder.Environment.IsDevelopment()) builder.WebHost.UseStaticWebAssets();
 
 var app = builder.Build();

@@ -1,9 +1,11 @@
 using MimeKit;
 using Rockaway.WebApp.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Rockaway.WebApp.Services.Mail;
 
-public class SmtpMailSender(IMailBodyRenderer renderer, ISmtpRelay smtpRelay) : IMailSender {
+public class SmtpMailSender(
+	IBackgroundTaskQueue queue, IMailBodyRenderer renderer, ISmtpRelay smtpRelay) : IMailSender {
 
 	private readonly MailboxAddress mailFrom = new("Rockaway Tickets", "tickets@rockaway.dev");
 
@@ -20,8 +22,12 @@ public class SmtpMailSender(IMailBodyRenderer renderer, ISmtpRelay smtpRelay) : 
 		return message;
 	}
 
-	public async Task<string> SendOrderConfirmationAsync(TicketOrderMailData data) {
+	public async Task<string> ActuallySendOrderConfirmationAsync(TicketOrderMailData data) {
 		var message = BuildOrderConfirmationMail(data);
+		await Task.Delay(TimeSpan.FromSeconds(10));
 		return await smtpRelay.SendMailAsync(message);
 	}
+
+	public async Task SendOrderConfirmationAsync(TicketOrderMailData data)
+		=> await queue.QueueBackgroundWorkItemAsync(async () => await ActuallySendOrderConfirmationAsync(data));
 }
