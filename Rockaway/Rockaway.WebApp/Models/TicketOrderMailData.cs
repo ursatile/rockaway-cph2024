@@ -1,3 +1,5 @@
+// Rockaway.WebApp/Models/TicketOrderMailData.cs
+
 using Rockaway.WebApp.Data.Entities;
 
 namespace Rockaway.WebApp.Models;

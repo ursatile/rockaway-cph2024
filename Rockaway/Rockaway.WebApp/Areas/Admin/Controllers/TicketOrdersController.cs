@@ -1,10 +1,15 @@
+using Mjml.Net;
 using Rockaway.WebApp.Data;
 using Rockaway.WebApp.Data.Entities;
+using Rockaway.WebApp.Models;
+using Rockaway.WebApp.Services;
+using System.Text;
+using Rockaway.WebApp.Services.Mail;
 
 namespace Rockaway.WebApp.Areas.Admin.Controllers;
 
 [Area("admin")]
-public class TicketOrdersController(RockawayDbContext context) : Controller {
+public class TicketOrdersController(RockawayDbContext context, IMailBodyRenderer mailRenderer) : Controller {
 
 	public async Task<IActionResult> Index()
 		=> View(await context.TicketOrders.ToListAsync());
@@ -27,7 +32,7 @@ public class TicketOrdersController(RockawayDbContext context) : Controller {
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> Create(
-		[Bind("Id,CustomerName,CustomerEmail,CreatedAt,CompletedAt")]
+		[Microsoft.AspNetCore.Mvc.Bind("Id,CustomerName,CustomerEmail,CreatedAt,CompletedAt")]
 		TicketOrder ticketOrder
 	) {
 		if (!ModelState.IsValid) return View(ticketOrder);
@@ -50,7 +55,7 @@ public class TicketOrdersController(RockawayDbContext context) : Controller {
 	// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 	[HttpPost]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> Edit(Guid id, [Bind("Id,CustomerName,CustomerEmail,CreatedAt,CompletedAt")] TicketOrder ticketOrder) {
+	public async Task<IActionResult> Edit(Guid id, [Microsoft.AspNetCore.Mvc.Bind("Id,CustomerName,CustomerEmail,CreatedAt,CompletedAt")] TicketOrder ticketOrder) {
 		if (id != ticketOrder.Id) return NotFound();
 		if (!ModelState.IsValid) return View(ticketOrder);
 		try {
@@ -84,4 +89,25 @@ public class TicketOrdersController(RockawayDbContext context) : Controller {
 	private bool TicketOrderExists(Guid id) {
 		return context.TicketOrders.Any(e => e.Id == id);
 	}
+
+	public async Task<IActionResult> Mail(Guid id, string format = "html") {
+		var ticketOrder = await context.TicketOrders
+			.Include(o => o.Contents).ThenInclude(item => item.TicketType)
+			.Include(o => o.Show).ThenInclude(s => s.HeadlineArtist)
+			.Include(o => o.Show).ThenInclude(s => s.Venue)
+			.Include(o => o.Show).ThenInclude(s => s.SupportSlots).ThenInclude(ss => ss.Artist)
+			.FirstOrDefaultAsync(m => m.Id == id);
+		if (ticketOrder == default) return NotFound();
+		// ReSharper disable once InvokeAsExtensionMethod
+		var data = new TicketOrderMailData(ticketOrder, UriExtensions.GetWebsiteBaseUri(Request));
+		switch (format) {
+			case "html":
+				var html = mailRenderer.RenderOrderConfirmationHtml(data);
+				return Content(html, "text/html");
+			default:
+				var text = mailRenderer.RenderOrderConfirmationText(data);
+				return Content(text, "text/plain", Encoding.UTF8);
+		}
+	}
+
 }

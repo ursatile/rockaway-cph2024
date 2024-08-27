@@ -36,6 +36,7 @@
 	  <None Include="wwwroot\scss\frontend.scss" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Folder Include="Templates\NewFolder\" />
 	  <Folder Include="wwwroot\lib\fontawesome\scss\" />
 	  <Folder Include="wwwroot\webfonts\" />
 	</ItemGroup>
