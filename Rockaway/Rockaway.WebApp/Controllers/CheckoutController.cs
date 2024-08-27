@@ -1,10 +1,12 @@
 using Rockaway.WebApp.Data;
 using Rockaway.WebApp.Data.Entities;
 using Rockaway.WebApp.Models;
+using Rockaway.WebApp.Services;
+using Rockaway.WebApp.Services.Mail;
 
 namespace Rockaway.WebApp.Controllers;
 
-public class CheckoutController(RockawayDbContext db, IClock clock) : Controller {
+public class CheckoutController(RockawayDbContext db, IClock clock, IMailSender mailSender) : Controller {
 
 	private async Task<TicketOrder?> FindOrderAsync(Guid id) {
 		return await db.TicketOrders
@@ -27,12 +29,9 @@ public class CheckoutController(RockawayDbContext db, IClock clock) : Controller
 		ticketOrder.CustomerName = post.CustomerName;
 		ticketOrder.CompletedAt = clock.GetCurrentInstant();
 		await db.SaveChangesAsync();
-		return Content(@$"""Order confirmed.
-
-		Your order ref is {ticketOrder.Reference}
-
-		We should probably send you an email or something.		
-		""");
+		var mailData = new TicketOrderMailData(ticketOrder, Request.GetWebsiteBaseUri());
+		await mailSender.SendOrderConfirmationAsync(mailData);
+		return View("Completed", mailData);
 	}
 
 	[HttpGet]

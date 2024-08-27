@@ -54,6 +54,14 @@ builder.Services.AddSingleton<IMailBodyRenderer, MailBodyRenderer>();
 builder.Services.AddSingleton<IRazorEngine, RazorEngine>();
 builder.Services.AddSingleton<IMjmlRenderer, MjmlRenderer>();
 
+builder.Services.AddSingleton<IMailSender, SmtpMailSender>();
+var smtpSettings = new SmtpSettings();
+builder.Configuration.Bind("Smtp", smtpSettings);
+logger.LogInformation($"Using {smtpSettings.Host} as SMTP relay server");
+builder.Services.AddSingleton(smtpSettings);
+builder.Services.AddSingleton<ISmtpRelay, SmtpRelay>();
+
+if (! builder.Environment.IsDevelopment()) builder.WebHost.UseStaticWebAssets();
 
 var app = builder.Build();
 
@@ -63,6 +71,8 @@ if (app.Environment.IsProduction()) {
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
+
+
 
 using var scope = app.Services.CreateScope();
 using var db = scope.ServiceProvider.GetService<RockawayDbContext>()!;
